@@ -14,6 +14,8 @@
         "api:local": "node apps/remote-api/tools/dev-server.js",
         "startup:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-startup.ps1",
         "startup:uninstall": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/uninstall-startup.ps1",
+        "startup:user:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-startup-folder.ps1",
+        "startup:user:uninstall": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/uninstall-startup-folder.ps1",
         "check": "node --check apps/host-agent/src/index.js && node --check apps/remote-api/api/_lib.js && node --check apps/remote-api/api/[...path].js && node --check apps/remote-api/tools/dev-server.js && node --check apps/remote-web/app.js"
     },
     "dependencies": {

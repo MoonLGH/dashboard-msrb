@@ -106,6 +106,20 @@ cd dashboard
 npm run startup:uninstall
 ```
 
+If Task Scheduler install is blocked by permissions, install the per-user hidden startup launcher instead:
+
+```powershell
+cd dashboard
+npm run startup:user:install
+```
+
+Remove it with:
+
+```powershell
+cd dashboard
+npm run startup:user:uninstall
+```
+
 For the web app, open `apps/remote-web/index.html` directly or serve it:
 
 ```powershell
