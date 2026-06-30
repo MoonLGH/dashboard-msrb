@@ -7,24 +7,12 @@ loadDotEnv(path.resolve(__dirname, '..', '.env'))
 process.env.DASHBOARD_USER_TOKEN ||= 'local-user-token'
 process.env.DASHBOARD_HOSTER_TOKEN ||= 'local-hoster-token'
 
-const handlers = {
-    '/api/agent': require('../api/agent'),
-    '/api/health': require('../api/health'),
-    '/api/jobs': require('../api/jobs'),
-    '/api/snapshot': require('../api/snapshot')
-}
+const handler = require('../api/[...path]')
 
 const port = Number(process.env.PORT || 3000)
 
 http.createServer((req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`)
-    const handler = handlers[url.pathname]
-    if (!handler) {
-        res.statusCode = 404
-        res.setHeader('Content-Type', 'application/json; charset=utf-8')
-        res.end(JSON.stringify({ error: 'Not found' }))
-        return
-    }
     handler(req, res)
 }).listen(port, () => {
     console.log(`PerfectBot remote API dev server at http://127.0.0.1:${port}`)
