@@ -1,0 +1,22 @@
+{
+    "name": "perfectbot-dashboard",
+    "private": true,
+    "version": "0.1.0",
+    "description": "Remote dashboard monorepo for PerfectBot Desk.",
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "scripts": {
+        "agent": "node apps/host-agent/src/index.js",
+        "web:serve": "node apps/remote-web/tools/serve.js",
+        "api:dev": "vercel dev apps/remote-api",
+        "api:local": "node apps/remote-api/tools/dev-server.js",
+        "startup:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-startup.ps1",
+        "startup:uninstall": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/uninstall-startup.ps1",
+        "check": "node --check apps/host-agent/src/index.js && node --check apps/remote-api/api/_lib.js && node --check apps/remote-api/api/agent.js && node --check apps/remote-api/api/jobs.js && node --check apps/remote-api/api/health.js && node --check apps/remote-api/api/snapshot.js && node --check apps/remote-api/tools/dev-server.js && node --check apps/remote-web/app.js"
+    },
+    "dependencies": {
+        "vercel": "^54.18.6"
+    }
+}

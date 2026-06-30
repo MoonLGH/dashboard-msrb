@@ -1,0 +1,8 @@
+{
+    "name": "@perfectbot-dashboard/remote-web",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "serve": "node tools/serve.js"
+    }
+}

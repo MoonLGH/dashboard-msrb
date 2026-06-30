@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>PerfectBot Remote Dashboard</title>
+        <link rel="stylesheet" href="./styles.css" />
+    </head>
+    <body>
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark">PB</div>
+                <div>
+                    <strong>PerfectBot Remote</strong>
+                    <span>cloud bridge desk</span>
+                </div>
+            </div>
+
+            <nav>
+                <a href="#overview">Overview</a>
+                <a href="#control">Control</a>
+                <a href="#configurator">Configurator</a>
+                <a href="#jobs">Jobs</a>
+            </nav>
+
+            <form id="connectionForm" class="connection">
+                <label>API Base <input id="apiBase" placeholder="https://your-app.vercel.app" /></label>
+                <label>User Token <input id="userToken" type="password" autocomplete="current-password" /></label>
+                <label>Hoster ID <input id="hosterId" placeholder="hoster-main" /></label>
+                <button type="submit">Connect</button>
+            </form>
+        </aside>
+
+        <main class="workspace">
+            <section id="overview" class="hero">
+                <div>
+                    <p class="eyebrow">Remote control plane</p>
+                    <h1>PerfectBot desk, reachable without exposing the hoster computer.</h1>
+                    <p id="connectionStatus">Not connected</p>
+                </div>
+                <div class="runtime">
+                    <span>Hoster</span>
+                    <strong id="hosterStatus">offline</strong>
+                    <small id="hosterUpdated">waiting for heartbeat</small>
+                </div>
+            </section>
+
+            <section class="metrics">
+                <article>
+                    <span>Bot</span>
+                    <strong id="botStatus">--</strong>
+                    <small id="botMeta">state not loaded</small>
+                </article>
+                <article>
+                    <span>Accounts</span>
+                    <strong id="accountCount">0</strong>
+                    <small id="ranToday">0 ran today</small>
+                </article>
+                <article>
+                    <span>CPU</span>
+                    <strong id="cpuUsage">--</strong>
+                    <small id="cpuMeta">system not loaded</small>
+                </article>
+                <article>
+                    <span>Clusters</span>
+                    <strong id="clusterCount">--</strong>
+                    <small>from config.json</small>
+                </article>
+            </section>
+
+            <section id="control" class="panel control-panel">
+                <div class="panel-head">
+                    <div>
+                        <h2>Controls</h2>
+                        <p>Actions are allowlisted and executed by the host agent.</p>
+                    </div>
+                    <button id="refreshStateBtn">Refresh</button>
+                </div>
+                <div class="control-grid">
+                    <button id="runAllBtn" class="primary">Run All</button>
+                    <button id="stopBtn" class="danger">Stop Bot</button>
+                    <label>Clusters <input id="clustersInput" type="number" min="1" max="50" value="1" /></label>
+                    <button id="setClustersBtn">Apply Clusters</button>
+                    <label>Account Index <input id="accountIndexInput" type="number" min="0" value="0" /></label>
+                    <button id="runAccountBtn">Run Account</button>
+                </div>
+            </section>
+
+            <section id="configurator" class="panel config-panel">
+                <div class="panel-head">
+                    <div>
+                        <h2>Configurator</h2>
+                        <p>Loads and saves the same local desk config.json.</p>
+                    </div>
+                    <div class="head-actions">
+                        <button id="loadConfigBtn">Load</button>
+                        <button id="saveConfigBtn" class="primary">Save</button>
+                    </div>
+                </div>
+                <textarea id="configText" spellcheck="false" placeholder="Load config to edit JSON."></textarea>
+            </section>
+
+            <section class="panel accounts-panel">
+                <div class="panel-head">
+                    <div>
+                        <h2>Accounts</h2>
+                        <p>Read-only overview from local desk state.</p>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Today</th>
+                                <th>Latest</th>
+                                <th>Proxy</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accountsBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="jobs" class="panel jobs-panel">
+                <div class="panel-head">
+                    <div>
+                        <h2>Job Timeline</h2>
+                        <p>Latest remote requests and hoster results.</p>
+                    </div>
+                    <button id="refreshJobsBtn">Refresh Jobs</button>
+                </div>
+                <div id="jobsList" class="jobs-list"></div>
+            </section>
+        </main>
+
+        <script src="./app.js"></script>
+    </body>
+</html>
