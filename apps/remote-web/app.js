@@ -155,7 +155,6 @@ function renderDesk() {
     $('botMeta').textContent = desk.pid ? `pid ${desk.pid}` : 'no active process'
     $('accountCount').textContent = String(desk.accounts?.length || 0)
     $('ranToday').textContent = `${(desk.accounts || []).filter(account => account.ranToday).length} ran today`
-    $('clusterCount').textContent = String(desk.config?.clusters ?? '--')
     $('clustersInput').value = String(desk.config?.clusters ?? 1)
 
     $('accountsBody').innerHTML = (desk.accounts || [])
@@ -182,6 +181,11 @@ function renderSystem() {
     $('cpuMeta').textContent = system.cpu?.temperature?.temperatureC
         ? `${Math.round(system.cpu.temperature.temperatureC)}C | ${system.cpu.model}`
         : system.cpu?.model || 'system loaded'
+    $('ramUsage').textContent = system.memory?.usedPercent == null ? '--' : `${system.memory.usedPercent}%`
+    $('ramMeta').textContent =
+        system.memory?.usedBytes && system.memory?.totalBytes
+            ? `${formatBytes(system.memory.usedBytes)} / ${formatBytes(system.memory.totalBytes)}`
+            : 'memory not loaded'
 }
 
 function renderJobs() {
@@ -216,6 +220,14 @@ function sleep(ms) {
 function signed(value) {
     const number = Number(value || 0)
     return `${number >= 0 ? '+' : ''}${number}`
+}
+
+function formatBytes(bytes) {
+    const value = Number(bytes || 0)
+    if (!value) return '--'
+    const units = ['B', 'KB', 'MB', 'GB', 'TB']
+    const index = Math.min(Math.floor(Math.log(value) / Math.log(1024)), units.length - 1)
+    return `${(value / 1024 ** index).toFixed(index <= 1 ? 0 : 1)} ${units[index]}`
 }
 
 function escapeHtml(value) {
