@@ -24,10 +24,10 @@ module.exports = async function handler(req, res) {
     const pathname = url.pathname
 
     try {
-        if (pathname === '/api/health') return handleHealth(req, res)
-        if (pathname === '/api/snapshot') return handleSnapshot(req, res, url)
-        if (pathname === '/api/jobs') return handleJobs(req, res, url)
-        if (pathname === '/api/agent') return handleAgent(req, res, url)
+        if (pathname === '/api/health') return await handleHealth(req, res)
+        if (pathname === '/api/snapshot') return await handleSnapshot(req, res, url)
+        if (pathname === '/api/jobs') return await handleJobs(req, res, url)
+        if (pathname === '/api/agent') return await handleAgent(req, res, url)
         return send(res, 404, { error: 'Not found' })
     } catch (error) {
         return send(res, error.status || 500, { error: error.message })
