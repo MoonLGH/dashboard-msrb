@@ -103,12 +103,34 @@ async function saveSnapshots(snapshots) {
     memory.snapshots = snapshots
 }
 
-function publicJob(job) {
+function redactedPayload(job) {
+    const payload = job.payload || {}
+    if (job.type !== 'ACCOUNT_ADD' && job.type !== 'ACCOUNT_UPDATE') return payload
+
+    if (payload.account) return { ...payload, account: redactAccount(payload.account) }
+    return redactAccount(payload)
+}
+
+function redactAccount(account) {
+    return {
+        ...account,
+        password: account.password ? '[redacted]' : '',
+        totpSecret: account.totpSecret ? '[redacted]' : '',
+        proxy: account.proxy
+            ? {
+                  ...account.proxy,
+                  password: account.proxy.password ? '[redacted]' : ''
+              }
+            : account.proxy
+    }
+}
+
+function publicJob(job, options = {}) {
     return {
         id: job.id,
         type: job.type,
         targetHosterId: job.targetHosterId,
-        payload: job.payload,
+        payload: options.includeSensitivePayload ? job.payload : redactedPayload(job),
         status: job.status,
         result: job.result || null,
         error: job.error || null,

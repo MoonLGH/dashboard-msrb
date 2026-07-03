@@ -94,7 +94,7 @@ async function handleAgent(req, res, url) {
         while (Date.now() - started <= waitMs) {
             const jobs = await loadJobs()
             const job = jobs.find(item => item.targetHosterId === hosterId && item.status === 'pending' && !isExpired(item))
-            if (job) return send(res, 200, { job: publicJob(job) })
+            if (job) return send(res, 200, { job: publicJob(job, { includeSensitivePayload: true }) })
             if (!waitMs) break
             await sleep(700)
         }
@@ -139,6 +139,9 @@ async function handleAgent(req, res, url) {
                 job.status = body.ok ? 'done' : 'failed'
                 job.result = body.ok ? body.result || null : null
                 job.error = body.ok ? null : body.error || 'Job failed'
+                if (job.type === 'ACCOUNT_ADD' || job.type === 'ACCOUNT_UPDATE') {
+                    job.payload = publicJob(job).payload
+                }
                 job.updatedAt = new Date().toISOString()
             })
             return send(res, 200, { ok: true })

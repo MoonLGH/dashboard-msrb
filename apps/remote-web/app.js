@@ -6,7 +6,10 @@ const ACTIONS = {
     BOT_STOP: 'BOT_STOP',
     CLUSTERS_SET: 'CLUSTERS_SET',
     CONFIG_GET: 'CONFIG_GET',
-    CONFIG_SAVE: 'CONFIG_SAVE'
+    CONFIG_SAVE: 'CONFIG_SAVE',
+    ACCOUNT_ADD: 'ACCOUNT_ADD',
+    ACCOUNT_UPDATE: 'ACCOUNT_UPDATE',
+    ACCOUNT_DELETE: 'ACCOUNT_DELETE'
 }
 
 const state = {
@@ -49,6 +52,18 @@ $('setClustersBtn').addEventListener('click', () => {
 })
 $('loadConfigBtn').addEventListener('click', () => loadConfig().catch(showError))
 $('saveConfigBtn').addEventListener('click', () => saveConfig().catch(showError))
+$('accountForm').addEventListener('submit', event => {
+    event.preventDefault()
+    saveAccount().catch(showError)
+})
+$('accountResetBtn').addEventListener('click', () => resetAccountForm())
+$('accountsBody').addEventListener('click', event => {
+    const button = event.target.closest('button[data-account-action]')
+    if (!button) return
+    const index = Number(button.dataset.index)
+    if (button.dataset.accountAction === 'edit') editAccount(index)
+    if (button.dataset.accountAction === 'delete') deleteAccount(index).catch(showError)
+})
 
 if (state.apiBase && state.userToken) refreshAll().catch(showError)
 
@@ -95,6 +110,31 @@ async function saveConfig() {
     }
     await submitAndWatch(ACTIONS.CONFIG_SAVE, { config })
     state.desk = null
+    await refreshDesk()
+}
+
+async function saveAccount() {
+    const account = accountFromForm()
+    if (!account.email) throw new Error('Account email is required')
+
+    const indexValue = $('accountEditIndex').value
+    const isEdit = indexValue !== ''
+    if (!isEdit && !account.password) throw new Error('Password is required for a new account')
+
+    const type = isEdit ? ACTIONS.ACCOUNT_UPDATE : ACTIONS.ACCOUNT_ADD
+    const payload = isEdit ? { index: Number(indexValue), account } : { account }
+    await submitAndWatch(type, payload)
+    resetAccountForm()
+    await refreshDesk()
+}
+
+async function deleteAccount(index) {
+    const account = (state.desk?.accounts || [])[index]
+    if (!account) throw new Error('Account not found')
+    const ok = window.confirm(`Delete account ${account.email}? A local backup will be created first.`)
+    if (!ok) return
+    await submitAndWatch(ACTIONS.ACCOUNT_DELETE, { index })
+    resetAccountForm()
     await refreshDesk()
 }
 
@@ -168,10 +208,67 @@ function renderDesk() {
                     <td>${account.ranToday ? '<span class="tag good">done</span>' : '<span class="tag warn">pending</span>'}</td>
                     <td>${escapeHtml(latest)}</td>
                     <td>${account.proxySet ? '<span class="tag">set</span>' : '<span class="tag muted">none</span>'}</td>
+                    <td class="row-actions">
+                        <button type="button" data-account-action="edit" data-index="${account.index}">Edit</button>
+                        <button type="button" class="danger" data-account-action="delete" data-index="${account.index}">Delete</button>
+                    </td>
                 </tr>
             `
         })
         .join('')
+}
+
+function editAccount(index) {
+    const account = (state.desk?.accounts || [])[index]
+    if (!account) return
+    $('accountEditIndex').value = String(index)
+    $('accountFormTitle').textContent = `Edit ${account.email}`
+    $('accountSubmitBtn').textContent = 'Save Account'
+    $('accountEmail').value = account.email || ''
+    $('accountPassword').value = ''
+    $('accountTotpSecret').value = ''
+    $('accountRecoveryEmail').value = account.recoveryEmail || ''
+    $('accountGeoLocale').value = account.geoLocale || 'auto'
+    $('accountLangCode').value = account.langCode || 'en'
+    $('accountProxyHttp').checked = Boolean(account.proxy?.proxyAxios)
+    $('accountProxyUrl').value = account.proxy?.url || ''
+    $('accountProxyPort').value = account.proxy?.port || ''
+    $('accountProxyUsername').value = account.proxy?.username || ''
+    $('accountProxyPassword').value = ''
+    $('accountSaveMobile').checked = Boolean(account.saveFingerprint?.mobile)
+    $('accountSaveDesktop').checked = Boolean(account.saveFingerprint?.desktop)
+    $('accountEmail').focus()
+}
+
+function resetAccountForm() {
+    $('accountForm').reset()
+    $('accountEditIndex').value = ''
+    $('accountFormTitle').textContent = 'Add Account'
+    $('accountSubmitBtn').textContent = 'Add Account'
+    $('accountGeoLocale').value = 'auto'
+    $('accountLangCode').value = 'en'
+}
+
+function accountFromForm() {
+    return {
+        email: $('accountEmail').value.trim(),
+        password: $('accountPassword').value,
+        totpSecret: $('accountTotpSecret').value.trim(),
+        recoveryEmail: $('accountRecoveryEmail').value.trim(),
+        geoLocale: $('accountGeoLocale').value.trim() || 'auto',
+        langCode: $('accountLangCode').value.trim() || 'en',
+        proxy: {
+            proxyAxios: $('accountProxyHttp').checked,
+            url: $('accountProxyUrl').value.trim(),
+            port: Number($('accountProxyPort').value || 0),
+            username: $('accountProxyUsername').value.trim(),
+            password: $('accountProxyPassword').value
+        },
+        saveFingerprint: {
+            mobile: $('accountSaveMobile').checked,
+            desktop: $('accountSaveDesktop').checked
+        }
+    }
 }
 
 function renderSystem() {

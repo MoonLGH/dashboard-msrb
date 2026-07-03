@@ -165,6 +165,10 @@ textarea {
     padding: 9px 10px;
 }
 
+input[type='checkbox'] {
+    width: auto;
+}
+
 textarea {
     height: calc(100% - 59px);
     min-height: 420px;
@@ -298,6 +302,38 @@ textarea {
     overflow: auto;
 }
 
+.account-form {
+    display: grid;
+    gap: 12px;
+    padding: 14px 16px 16px;
+    border-bottom: 1px solid var(--line);
+}
+
+.form-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 12px;
+}
+
+.checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+}
+
+.checks label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -326,6 +362,17 @@ td:first-child {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.row-actions {
+    display: flex;
+    gap: 7px;
+}
+
+.row-actions button {
+    min-height: 30px;
+    padding: 5px 8px;
+    font-size: 12px;
 }
 
 .tag {
@@ -426,7 +473,8 @@ td:first-child {
     }
 
     .metrics,
-    .control-grid {
+    .control-grid,
+    .form-grid {
         grid-template-columns: 1fr;
     }
 

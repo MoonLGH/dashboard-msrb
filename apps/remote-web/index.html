@@ -19,6 +19,7 @@
             <nav>
                 <a href="#overview">Overview</a>
                 <a href="#control">Control</a>
+                <a href="#accounts">Accounts</a>
                 <a href="#configurator">Configurator</a>
                 <a href="#jobs">Jobs</a>
             </nav>
@@ -100,13 +101,38 @@
                 <textarea id="configText" spellcheck="false" placeholder="Load config to edit JSON."></textarea>
             </section>
 
-            <section class="panel accounts-panel">
+            <section id="accounts" class="panel accounts-panel">
                 <div class="panel-head">
                     <div>
                         <h2>Accounts</h2>
-                        <p>Read-only overview from local desk state.</p>
+                        <p>Secrets are write-only from remote. Local desk creates a timestamped backup before changes.</p>
                     </div>
                 </div>
+                <form id="accountForm" class="account-form" autocomplete="off">
+                    <input id="accountEditIndex" type="hidden" />
+                    <div class="form-head">
+                        <strong id="accountFormTitle">Add Account</strong>
+                        <button id="accountResetBtn" type="button">Clear</button>
+                    </div>
+                    <div class="form-grid">
+                        <label>Email <input id="accountEmail" type="email" autocomplete="off" required /></label>
+                        <label>Password <input id="accountPassword" type="password" autocomplete="new-password" /></label>
+                        <label>TOTP Secret <input id="accountTotpSecret" type="password" autocomplete="off" /></label>
+                        <label>Recovery Email <input id="accountRecoveryEmail" type="email" autocomplete="off" /></label>
+                        <label>Geo Locale <input id="accountGeoLocale" value="auto" autocomplete="off" /></label>
+                        <label>Lang Code <input id="accountLangCode" value="en" autocomplete="off" /></label>
+                        <label>Proxy URL <input id="accountProxyUrl" autocomplete="off" /></label>
+                        <label>Proxy Port <input id="accountProxyPort" type="number" min="0" autocomplete="off" /></label>
+                        <label>Proxy Username <input id="accountProxyUsername" autocomplete="off" /></label>
+                        <label>Proxy Password <input id="accountProxyPassword" type="password" autocomplete="new-password" /></label>
+                    </div>
+                    <div class="checks">
+                        <label><input id="accountProxyHttp" type="checkbox" /> Proxy HTTP</label>
+                        <label><input id="accountSaveMobile" type="checkbox" /> Save Mobile Fingerprint</label>
+                        <label><input id="accountSaveDesktop" type="checkbox" /> Save Desktop Fingerprint</label>
+                    </div>
+                    <button id="accountSubmitBtn" type="submit" class="primary">Add Account</button>
+                </form>
                 <div class="table-wrap">
                     <table>
                         <thead>
@@ -115,6 +141,7 @@
                                 <th>Today</th>
                                 <th>Latest</th>
                                 <th>Proxy</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="accountsBody"></tbody>

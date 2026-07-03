@@ -167,7 +167,7 @@ function updateLocalJob(job, patch) {
     const next = {
         id: job.id,
         type: job.type,
-        payload: job.payload || {},
+        payload: redactedJobPayload(job),
         status: job.status,
         createdAt: job.createdAt,
         updatedAt: new Date().toISOString(),
@@ -180,6 +180,28 @@ function updateLocalJob(job, patch) {
     snapshot.hosterId = settings.hosterId
     snapshot.localDeskBase = settings.localDeskBase
     writeSnapshot(snapshot)
+}
+
+function redactedJobPayload(job) {
+    const payload = job.payload || {}
+    if (job.type !== ACTIONS.ACCOUNT_ADD && job.type !== ACTIONS.ACCOUNT_UPDATE) return payload
+
+    if (payload.account) return { ...payload, account: redactAccount(payload.account) }
+    return redactAccount(payload)
+}
+
+function redactAccount(account) {
+    return {
+        ...account,
+        password: account.password ? '[redacted]' : '',
+        totpSecret: account.totpSecret ? '[redacted]' : '',
+        proxy: account.proxy
+            ? {
+                  ...account.proxy,
+                  password: account.proxy.password ? '[redacted]' : ''
+              }
+            : account.proxy
+    }
 }
 
 function readSnapshot() {
