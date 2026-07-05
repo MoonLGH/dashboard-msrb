@@ -185,7 +185,7 @@ textarea {
     min-height: 100vh;
     display: grid;
     grid-template-columns: minmax(480px, 1fr) minmax(420px, 0.86fr);
-    grid-template-rows: auto auto minmax(300px, 0.8fr) minmax(420px, 1fr);
+    grid-template-rows: auto auto minmax(260px, 0.7fr) minmax(360px, 0.9fr) minmax(420px, 1fr);
     gap: 14px;
     padding: 18px;
 }
@@ -274,6 +274,10 @@ textarea {
 }
 
 .control-panel {
+    grid-column: 1;
+}
+
+.today-panel {
     grid-column: 1;
 }
 
@@ -396,6 +400,76 @@ td:first-child {
     background: color-mix(in srgb, var(--warn) 14%, transparent);
 }
 
+.today-updates {
+    max-height: 520px;
+    overflow: auto;
+    padding: 14px;
+    display: grid;
+    align-content: start;
+    gap: 14px;
+}
+
+.today-group {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--panel-2) 48%, transparent);
+    overflow: hidden;
+}
+
+.today-group h3 {
+    margin: 0;
+    padding: 11px 13px;
+    border-bottom: 1px solid var(--line);
+    color: var(--accent-2);
+    font-size: 13px;
+}
+
+.today-list {
+    display: grid;
+}
+
+.today-entry {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 13px;
+    border-bottom: 1px solid var(--line);
+}
+
+.today-entry:last-child {
+    border-bottom: 0;
+}
+
+.today-entry div {
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+}
+
+.today-entry strong {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.today-entry small {
+    color: var(--muted);
+}
+
+.empty-feed {
+    min-height: 120px;
+    display: grid;
+    place-items: center;
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
 .jobs-list {
     max-height: 420px;
     overflow: auto;
@@ -449,6 +523,7 @@ td:first-child {
     .hero,
     .metrics,
     .control-panel,
+    .today-panel,
     .config-panel,
     .accounts-panel,
     .jobs-panel {

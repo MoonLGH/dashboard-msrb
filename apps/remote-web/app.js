@@ -18,6 +18,7 @@ const state = {
     hosterId: localStorage.getItem('pbRemote.hosterId') || 'hoster-main',
     desk: null,
     system: null,
+    todayUpdates: null,
     jobs: []
 }
 
@@ -39,6 +40,7 @@ $('connectionForm').addEventListener('submit', event => {
 })
 
 $('refreshStateBtn').addEventListener('click', () => refreshDesk().catch(showError))
+$('refreshTodayBtn').addEventListener('click', () => refreshDesk().catch(showError))
 $('refreshJobsBtn').addEventListener('click', () => refreshJobs().catch(showError))
 $('runAllBtn').addEventListener('click', () => submitAndWatch(ACTIONS.BOT_RUN_ALL).catch(showError))
 $('stopBtn').addEventListener('click', () => submitAndWatch(ACTIONS.BOT_STOP).catch(showError))
@@ -86,12 +88,14 @@ async function refreshDesk() {
     const snapshot = data.snapshot
     state.desk = snapshot.desk || null
     state.system = snapshot.system || null
+    state.todayUpdates = snapshot.todayUpdates || snapshot.desk?.todayUpdates || null
     state.jobs = snapshot.jobs || state.jobs
     $('connectionStatus').textContent = snapshot.lastError
         ? `Snapshot loaded with local warning: ${snapshot.lastError}`
         : `Snapshot loaded from hoster JSON at ${new Date(snapshot.updatedAt).toLocaleString()}`
     renderDesk()
     renderSystem()
+    renderTodayUpdates()
     renderJobs()
 }
 
@@ -213,6 +217,49 @@ function renderDesk() {
                         <button type="button" class="danger" data-account-action="delete" data-index="${account.index}">Delete</button>
                     </td>
                 </tr>
+            `
+        })
+        .join('')
+}
+
+function renderTodayUpdates() {
+    const updates = state.todayUpdates
+    const body = $('todayUpdatesBody')
+    const meta = $('todayUpdatesMeta')
+    if (!body || !meta) return
+
+    const groups = updates?.groups || []
+    meta.textContent = updates?.dateLabel
+        ? `${updates.totalEntries || 0} entries from ${updates.dateLabel} | snapshot ${new Date(updates.generatedAt).toLocaleString()}`
+        : 'No dataUpdate.txt entries found on the hoster yet.'
+
+    if (!groups.length) {
+        body.innerHTML = '<div class="empty-feed">No entries available for today or latest dataUpdate date.</div>'
+        return
+    }
+
+    body.innerHTML = groups
+        .map(group => {
+            const count = group.entries.length
+            return `
+                <section class="today-group">
+                    <h3>Group ${group.start} - ${group.end} (${count} ${count === 1 ? 'entry' : 'entries'})</h3>
+                    <div class="today-list">
+                        ${group.entries
+                            .map(
+                                entry => `
+                                    <article class="today-entry">
+                                        <div>
+                                            <strong>${escapeHtml(entry.email)} <span>(Nilai: ${entry.finalPoints})</span></strong>
+                                            <small>Data: ${escapeHtml(entry.dateTimeLabel)}</small>
+                                        </div>
+                                        <span class="tag good">${signed(entry.collectedPoints)}</span>
+                                    </article>
+                                `
+                            )
+                            .join('')}
+                    </div>
+                </section>
             `
         })
         .join('')

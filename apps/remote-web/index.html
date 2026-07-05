@@ -19,6 +19,7 @@
             <nav>
                 <a href="#overview">Overview</a>
                 <a href="#control">Control</a>
+                <a href="#today-updates">Today Updates</a>
                 <a href="#accounts">Accounts</a>
                 <a href="#configurator">Configurator</a>
                 <a href="#jobs">Jobs</a>
@@ -85,6 +86,17 @@
                     <label>Account Index <input id="accountIndexInput" type="number" min="0" value="0" /></label>
                     <button id="runAccountBtn">Run Account</button>
                 </div>
+            </section>
+
+            <section id="today-updates" class="panel today-panel">
+                <div class="panel-head">
+                    <div>
+                        <h2>TODAY UPDATES</h2>
+                        <p id="todayUpdatesMeta">Latest point values from the hoster dataUpdate.txt.</p>
+                    </div>
+                    <button id="refreshTodayBtn">Refresh</button>
+                </div>
+                <div id="todayUpdatesBody" class="today-updates"></div>
             </section>
 
             <section id="configurator" class="panel config-panel">

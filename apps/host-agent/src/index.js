@@ -140,6 +140,7 @@ async function refreshSnapshot() {
         },
         desk: previous.desk || null,
         system: previous.system || null,
+        todayUpdates: previous.todayUpdates || null,
         lastError: null,
         jobs: previous.jobs || []
     }
@@ -154,6 +155,14 @@ async function refreshSnapshot() {
         next.system = await localDesk('/api/system')
     } catch (error) {
         next.lastError = next.lastError ? `${next.lastError}; system: ${error.message}` : `system: ${error.message}`
+    }
+
+    try {
+        next.todayUpdates = await localDesk('/api/today-updates')
+    } catch (error) {
+        next.lastError = next.lastError
+            ? `${next.lastError}; today updates: ${error.message}`
+            : `today updates: ${error.message}`
     }
 
     writeSnapshot(next)
@@ -227,6 +236,7 @@ function publicSnapshot(snapshot) {
         agent: snapshot.agent,
         desk: snapshot.desk,
         system: snapshot.system,
+        todayUpdates: snapshot.todayUpdates || null,
         lastError: snapshot.lastError || null,
         jobs: Array.isArray(snapshot.jobs) ? snapshot.jobs.slice(-50) : []
     }
